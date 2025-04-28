@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Karaokê 🎤</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+    }
+    #player {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: black;
+    }
+    h1, h2, p, ul, #qrcode, button {
+      position: relative;
+      z-index: 1;
+      color: white;
+      text-align: center;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <h1>Karaokê 🎤</h1>
+  <video id="player" controls autoplay muted></video>
+  <h2>Música Atual:</h2>
+  <p id="musicaAtual">Nenhuma música ainda</p>
+  <h2>Fila de Cantores:</h2>
+  <ul id="fila"></ul>
+  <h2>Peça uma Música:</h2>
+  <div id="qrcode"></div>
+</body>
+</html>
