@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peça Sua Música 🎤</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: white;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    input, button {
+      width: 90%;
+      max-width: 400px;
+      margin: 10px 0;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+    #listaMusicas button {
+      background: #1db954;
+      color: white;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #erro {
+      color: red;
+    }
+    #enviarSelecao {
+      background: #1e90ff;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Peça Sua Música 🎶</h1>
+  <input type="text" id="nome" placeholder="Digite seu nome">
+  <button onclick="validarNome()">OK</button>
+  <div id="erro"></div>
+
+  <div id="areaPedido" style="display:none;">
+    <input type="text" id="busca" placeholder="Buscar música..." oninput="filtrarMusicas()">
+    <ul id="listaMusicas"></ul>
+
+    <h2>Suas Músicas:</h2>
+    <ul id="minhasMusicas"></ul>
+
+    <button id="enviarSelecao" onclick="enviarSelecao()">🎵 Enviar Seleção</button>
+  </div>
+
+  <script>
+    const db = firebase.database();
+    let playlist = [];
+    let playlistFiltrada = [];
+    let usuarioAtual = null;
+    let musicasSelecionadas = [];
+
+    fetch('karaoke.json?v=' + Date.now())
+      .then(response => response.json())
+      .then(data => {
+        playlist = data;
+        playlistFiltrada = data;
+        mostrarLista();
+      });
+
+    function validarNome() {
+      const nome = document.getElementById('nome').value.trim().toLowerCase();
+      if (nome === '') return;
+
+      db.ref('usuarios/' + nome).once('value')
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            usuarioAtual = snapshot.val();
+            document.getElementById('areaPedido').style.display = 'block';
+            document.getElementById('erro').innerText = '';
+
+            document.getElementById('nome').style.display = 'none';
+            document.querySelector('button[onclick="validarNome()"]').style.display = 'none';
+          } else {
+            usuarioAtual = null;
+            document.getElementById('areaPedido').style.display = 'none';
+            document.getElementById('erro').innerText = 'Nome não encontrado.';
+          }
+        });
+    }
+
+    function mostrarLista() {
+      const lista = document.getElementById('listaMusicas');
+      lista.innerHTML = '';
+      playlistFiltrada.forEach((musica, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button onclick="adicionarFila(${index})">${musica.nome}</button>`;
+        lista.appendChild(li);
+      });
+    }
+
+    function adicionarFila(index) {
+      if (!usuarioAtual) {
+        alert('Valide seu nome primeiro.');
+        return;
+      }
+
+      const musica = playlistFiltrada[index];
+
+      if (musicasSelecionadas.some(m => m.nome === musica.nome)) {
+        alert('Essa música já foi adicionada à sua lista.');
+        return;
+      }
+
+      musicasSelecionadas.push(musica);
+      atualizarListaMinhasMusicas();
+    }
+
+    function atualizarListaMinhasMusicas() {
+      const minhasMusicas = document.getElementById('minhasMusicas');
+      minhasMusicas.innerHTML = '';
+
+      musicasSelecionadas.forEach((musica, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${musica.nome} <button onclick="removerMusicaSelecionada(${index})">❌</button>`;
+        minhasMusicas.appendChild(li);
+      });
+    }
+
+    function removerMusicaSelecionada(index) {
+      musicasSelecionadas.splice(index, 1);
+      atualizarListaMinhasMusicas();
+    }
+
+    function enviarSelecao() {
+      if (!usuarioAtual) {
+        alert('Valide seu nome primeiro.');
+        return;
+      }
+
+      if (musicasSelecionadas.length === 0) {
+        alert('Nenhuma música selecionada.');
+        return;
+      }
+
+      musicasSelecionadas.forEach(musica => {
+        db.ref('fila').push({
+          arquivo: musica.arquivo,
+          nome: musica.nome,
+          cantor: usuarioAtual.nome
+        });
+        usuarioAtual.musicasPedidas++;
+      });
+
+      db.ref('usuarios/' + usuarioAtual.nome.toLowerCase())
+        .update({ musicasPedidas: usuarioAtual.musicasPedidas });
+
+      alert('Músicas enviadas com sucesso!');
+
+      musicasSelecionadas = [];
+      atualizarListaMinhasMusicas();
+    }
+
+    function filtrarMusicas() {
+      const busca = document.getElementById('busca').value.toLowerCase();
+      playlistFiltrada = playlist.filter(musica => musica.nome.toLowerCase().includes(busca));
+      mostrarLista();
+    }
+  </script>
+</body>
+</html>
