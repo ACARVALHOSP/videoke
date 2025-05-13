@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Debug - Fila do Karaokê 🎤</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #1db954;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .arquivo {
+      font-size: 14px;
+      color: #d1ffd6;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 16px;
+      background-color: #ff5555;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fila Atual 🎤</h1>
+  <h2>➕ Adicionar Música Manualmente</h2>
+<div style="display: flex; flex-direction: column; max-width: 400px; gap: 10px;">
+  <input type="text" id="campoMusica" placeholder="Nome da música">
+  <input type="text" id="campoCantor" placeholder="Nome do cantor">
+  <input type="text" id="campoArquivo" placeholder="Nome do arquivo (ex: musica1.mp4)">
+  <button onclick="adicionarManual()">➕ Adicionar à Fila</button>
+</div>
+<hr style="margin: 20px 0;">
+
+  <input type="text" id="buscaMusica" placeholder="Buscar por nome ou cantor..." style="width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; border-radius: 5px;">
+
+  <ul id="listaFila"></ul>
+
+  <script>
+  const db = firebase.database();
+  let todasMusicas = [];
+
+  function carregarFila() {
+    const listaFila = document.getElementById('listaFila');
+    listaFila.innerHTML = '';
+
+    db.ref('fila').on('value', snapshot => {
+      todasMusicas = [];
+      snapshot.forEach(childSnapshot => {
+        const musica = childSnapshot.val();
+        musica.key = childSnapshot.key;
+        todasMusicas.push(musica);
+      });
+      aplicarFiltro(); // aplica busca após carregar
+    });
+  }
+
+  function aplicarFiltro() {
+    const listaFila = document.getElementById('listaFila');
+    listaFila.innerHTML = '';
+
+    const termo = document.getElementById('buscaMusica').value.toLowerCase();
+
+    const filtradas = todasMusicas.filter(m =>
+      m.nome.toLowerCase().includes(termo) ||
+      m.cantor.toLowerCase().includes(termo)
+    );
+
+    filtradas.forEach(musica => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <strong>${musica.cantor} - ${musica.nome}</strong><br>
+        <span class="arquivo">Arquivo: ${musica.arquivo}</span><br>
+        <button onclick="tocarMusica('${musica.arquivo}')">▶️ Tocar</button>
+        <button onclick="removerMusica('${musica.key}')">Remover</button>
+      `;
+      listaFila.appendChild(li);
+    });
+  }
+
+  function tocarMusica(arquivo) {
+    const player = document.getElementById('reprodutor');
+    player.src = 'videos/' + arquivo;
+    player.style.display = 'block';
+    player.play();
+  }
+
+  function removerMusica(key) {
+    if (confirm('Tem certeza que deseja remover essa música?')) {
+      db.ref('fila/' + key).remove();
+    }
+  }
+function adicionarManual() {
+  const nome = document.getElementById('campoMusica').value.trim();
+  const cantor = document.getElementById('campoCantor').value.trim();
+  const arquivo = document.getElementById('campoArquivo').value.trim();
+
+  if (!nome || !cantor || !arquivo) {
+    alert('Preencha todos os campos.');
+    return;
+  }
+
+  db.ref('fila').push({
+    nome,
+    cantor,
+    arquivo
+  }).then(() => {
+    alert('✅ Música adicionada à fila com sucesso!');
+    // Limpar campos
+    document.getElementById('campoMusica').value = '';
+    document.getElementById('campoCantor').value = '';
+    document.getElementById('campoArquivo').value = '';
+  }).catch((error) => {
+    console.error('Erro ao adicionar:', error);
+    alert('Erro ao adicionar à fila.');
+  });
+}
+  // Evento para busca
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('buscaMusica').addEventListener('input', aplicarFiltro);
+    carregarFila();
+  });
+</script>
+
+</body>
+</html>

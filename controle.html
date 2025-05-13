@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Peça Sua Música 🎤</title>
+  <link rel="stylesheet" href="controle.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <h1>Peça Sua Música 🎶</h1>
+  <div id="login-area" class="card">
+    <h2>Login</h2>
+    <input type="text" id="nome" placeholder="Digite seu login">
+    <button id="validarNomeBtn">OK</button>
+    <div id="erro"></div>
+  </div>
+<div id="sidebarMusicas" class="sidebar-musicas" style="display: none;">
+  <h3 id="artistaSelecionado"></h3>
+   <button class="fechar-btn" onclick="fecharSidebar()">✖</button>	
+  <ul id="listaMusicasSidebar"></ul>
+</div>
+  <div id="areaPedido" style="display: none;">
+    <div class="filtros">
+    <div id="infoUsuario" class="info-usuario"></div>
+      <button id="btnGenero">🎵 Filtrar por Gênero</button>
+      <button id="btnArtista">🎤 Filtrar por Artista</button>
+    </div>
+<div id="filtroGenero" style="display:none;">
+  <div id="filtroGeneroContainer" class="genero-container"></div>
+  </div>
+<div id="filtroArtistas" style="display:none;">
+  <div id="gridArtistas" class="artistas-grid"></div>
+  <div id="paginacaoArtistas">
+    <button id="btnAnterior">⬅️</button>
+    <button id="btnProximo">➡️</button>
+  </div>
+   <ul id="listaMusicas" style="display: none;"></ul>
+  </div>
+  <script src="controle.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #121212;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+h1 {
+  margin-top: 30px;
+  font-size: 28px;
+  text-align: center;
+}
+.card {
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+  width: 90%;
+  margin-top: 20px;
+}
+.card h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+input, button, select {
+  width: 100%;
+  margin: 10px 0;
+  padding: 15px;
+  border: 5px;
+  border-radius: 10px;
+  font-size: 18px;
+}
+.filtros {
+  display: grid;
+  place-items: center; /* Centraliza horizontal e verticalmente */
+  width: 100%;
+  max-width: 90vw;
+  gap:5px;  
+}
+.filtros button {
+  background: #333;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  max-width: 90vw;
+  margin:auto;
+  padding:10px;  
+}
+#listaMusicas button {
+  background: #1db954;
+  color: white;
+  font-weight: bold;
+  margin: 0 auto;   
+  margin-bottom: 10px;
+  width: 100%;
+  cursor: pointer;
+}
+#erro {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  width: 90%;
+  max-width: 400px;
+}
+li {
+  margin: 5px 0;
+}
+.info-usuario {
+  color: #1db954;
+  font-weight: bold;
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 18px;
+}
+.artistas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Mantém tamanho fixo */
+  gap: 3px;
+  margin: auto;
+  }
+.artistas-grid button {
+  display:flex;
+  flex-direction: column;
+  text-align: center;
+  text-overflow: ellipsis;
+   background-color:#1db954;  /* Fundo verde */
+  color: white;             /* Texto branco */
+  cursor: pointer;          /* Indica que é clicável */
+  font-size: 14px;          /* Tamanho do texto */
+  font-weight: bold;       
+  border-radius: 10px;
+  margin: 0;
+  
+ }
+.artistas-grid button:hover {
+  background-color: #14833b; /* Cor mais escura ao passar o mouse */
+  transform: scale(1.2);    /* Aumenta ligeiramente o botão */
+}
+#paginacaoArtistas {
+  display: flex; /* Ou grid, se necessário */
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+#btnAnterior, #btnProximo {
+  width: 60px;
+  height: 40px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #1db954;
+  color: white;
+  border: 2px solid #14833b;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex; /* Torna o botão um flex container */
+  align-items: center; /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+#btnAnterior:hover, #btnProximo:hover {
+  background-color: #14833b;
+  transform: scale(1.1);
+}
+.genero-container{
+display: grid;
+grid-template-columns: repeat(5,1fr);
+gap: 10px;
+place-items: center; /* Centraliza horizontal e verticalmente */
+width:700px;
+}
+.genero-btn {
+  width: 130px;
+  height: 50px;
+  background-color: #1db954; /* Verde vibrante */
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+.genero-btn:hover {
+  background-color: #14833b; /* Verde mais escuro */
+  transform: scale(3); /* Aumenta ligeiramente */
+  transition: all 0.3s ease-in-out;
+}
+button:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+.sidebar-musicas {
+  display:grid;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background: #1e1e1e;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  padding: 20px;
+  z-index: 999;
+  transition:0.5;
+  }
+.sidebar-musicas h3 {
+  color: #1db954;
+  margin-top: 0;
+  text-align:center;
+   max-height: 10%;
+}
+.sidebar-musicas ul {
+  list-style: none;
+  padding: 0;
+}
+.sidebar-musicas li {
+  color:red;
+}
+.fechar-btn {
+  display: flex;
+  align-items: center; /* Centraliza na vertical */
+  justify-content: center; /* Centraliza na horizontal */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%; /* Botão redondo */
+  cursor: pointer;
+}
+.sidebar-musicas button{
+}

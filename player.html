@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="player.css">
+  <title>Karaokê 🎤</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <h1>Karaokê 🎤</h1>
+  <video id="player" playsinline></video>
+  <!-- <h2>Música Atual:</h2> -->
+  
+<p id="musicaAtual" class="hidden">Nenhuma música ainda</p>
+
+  <!-- <h2>Fila de Cantores:</h2> -->
+  <ul id="fila" class="hidden"></ul>
+
+  <div id="qr-center">
+    <h2>Peça Sua Música 🎶</h2>
+    <div id="qrcode-central"></div>
+  </div>
+
+  <div id="qr-fixed">
+    <div id="qrcode-fixed"></div>
+  </div>
+
+  <div id="notificacao" style="display: none;">🎤 Agora cantando: <span id="notificacaoTexto"></span></div>
+  <div id="timerProxima" class="hidden">⏳ Próxima música em <span id="contador">15</span>s</div>
+  <button id="iniciarKaraoke">▶️ Iniciar Karaokê</button>
+</body>
+</html>
