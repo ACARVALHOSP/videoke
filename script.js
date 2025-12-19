@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let player = document.getElementById('player');
   let fila = [];
   let currentSong = null;
+  let proximaAgendada = false;
   const db = firebase.database();
 
   const iniciarBtn = document.getElementById('iniciarKaraoke');
@@ -46,7 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function tocarProxima() {
+    if (proximaAgendada) return;
+
     if (fila.length > 0) {
+      proximaAgendada = true;
       const proxima = fila[0];
       let segundos = 15;
 
@@ -85,12 +89,16 @@ document.addEventListener('DOMContentLoaded', function() {
           const qrFixed = document.getElementById('qr-fixed');
           if (qrCenter) qrCenter.style.display = 'none';
           if (qrFixed) qrFixed.style.display = 'block';
+
+          proximaAgendada = false;
         }
       }, 1000);
     } else {
       currentSong = null;
       document.getElementById('musicaAtual').innerText = 'Nenhuma música ainda';
       player.src = '';
+
+      proximaAgendada = false;
 
       const qrCenter = document.getElementById('qr-center');
       const qrFixed = document.getElementById('qr-fixed');
@@ -102,8 +110,12 @@ document.addEventListener('DOMContentLoaded', function() {
   player.addEventListener('ended', () => {
     if (currentSong && currentSong.key) {
       db.ref('fila/' + currentSong.key).remove();
-      currentSong = null;
+      fila = fila.filter(item => item.key !== currentSong.key);
+      atualizarFilaUI();
     }
+
+    currentSong = null;
+    tocarProxima();
   });
 
   function gerarQRCode() {
