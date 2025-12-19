@@ -1,7 +1,9 @@
 
-document.addEventListener('DOMContentLoaded', () => {
-  const player = document.getElementById('player');
-  const iniciarBtn = document.getElementById('iniciarKaraoke');
+document.addEventListener('DOMContentLoaded', function() {
+  let player = document.getElementById('player');
+  let fila = [];
+  let currentSong = null;
+  let proximaAgendada = false;
   const db = firebase.database();
 
   if (!player) {
@@ -56,10 +58,58 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function tocarProxima() {
-    if (fila.length === 0) {
+    if (proximaAgendada) return;
+
+    if (fila.length > 0) {
+      proximaAgendada = true;
+      const proxima = fila[0];
+      let segundos = 15;
+
+      const timerDiv = document.getElementById('timerProxima');
+      const contadorSpan = document.getElementById('contador');
+      if (timerDiv && contadorSpan) {
+        timerDiv.classList.add("mostrar");
+        contadorSpan.innerText = segundos;
+      }
+
+      const intervalo = setInterval(() => {
+        segundos--;
+        if (contadorSpan) contadorSpan.innerText = segundos;
+        if (segundos <= 0) {
+          clearInterval(intervalo);
+          if (timerDiv) timerDiv.style.display = 'none';
+
+          currentSong = proxima;
+          document.getElementById('musicaAtual').innerText = `${currentSong.cantor} - ${currentSong.nome}`;
+          player.src = `videos/${currentSong.arquivo}`;
+          player.play().catch(() => {
+            iniciarBtn.style.display = 'block';
+          });
+
+          const notifDiv = document.getElementById('notificacao');
+          const notifTexto = document.getElementById('notificacaoTexto');
+          if (notifDiv && notifTexto) {
+            notifTexto.innerText = `${currentSong.cantor} - ${currentSong.nome}`;
+            notifDiv.style.display = 'block';
+            setTimeout(() => {
+              notifDiv.style.display = 'none';
+            }, 5000);
+          }
+
+          const qrCenter = document.getElementById('qr-center');
+          const qrFixed = document.getElementById('qr-fixed');
+          if (qrCenter) qrCenter.style.display = 'none';
+          if (qrFixed) qrFixed.style.display = 'block';
+
+          proximaAgendada = false;
+        }
+      }, 1000);
+    } else {
       currentSong = null;
       document.getElementById('musicaAtual').innerText = 'Nenhuma música ainda';
       player.src = '';
+
+      proximaAgendada = false;
 
       const qrCenter = document.getElementById('qr-center');
       const qrFixed = document.getElementById('qr-fixed');
@@ -111,10 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   player.addEventListener('ended', () => {
-    if (currentSong?.key) {
-      db.ref(`fila/${currentSong.key}`).remove();
-      currentSong = null;
+    if (currentSong && currentSong.key) {
+      db.ref('fila/' + currentSong.key).remove();
+      fila = fila.filter(item => item.key !== currentSong.key);
+      atualizarFilaUI();
     }
+
+    currentSong = null;
+    tocarProxima();
   });
 
   function gerarQRCode() {
