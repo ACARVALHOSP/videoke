@@ -111,10 +111,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   player.addEventListener('ended', () => {
-    if (currentSong?.key) {
-      db.ref(`fila/${currentSong.key}`).remove();
-      currentSong = null;
+    if (!currentSong?.key) {
+      tocarProxima();
+      return;
     }
+
+    const musicaFinalizada = currentSong.key;
+    currentSong = null;
+
+    db.ref(`fila/${musicaFinalizada}`)
+      .remove()
+      .finally(() => tocarProxima());
   });
 
   function gerarQRCode() {
