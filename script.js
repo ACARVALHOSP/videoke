@@ -126,10 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function gerarQRCode() {
     const url = 'https://acarvalhosp.github.io/videoke/controle.html';
+    const qrSize = Math.round(256 / 3);
     const opcoes = {
       text: url,
-      width: 256,
-      height: 256,
+      width: qrSize,
+      height: qrSize,
       colorDark: '#000000',
       colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.H
