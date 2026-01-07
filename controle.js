@@ -8,6 +8,7 @@ let artistas = new Map();
 let generos = new Set();
 let paginaAtual = 0;
 const ARTISTAS_POR_PAGINA = 20;
+let termoBusca = '';
 // Validar nome do usuário
 function validarNome() {
   const nome = document.getElementById('nome').value.trim().toLowerCase();
@@ -63,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
     criarBotoesArtistas();
   });
   document.getElementById('validarNomeBtn').addEventListener('click', validarNome);
+  document.getElementById('buscaMusicaArtista').addEventListener('input', (event) => {
+    termoBusca = event.target.value;
+    aplicarFiltros();
+  });
 
   // 👇 Adicione estes dois
   document.getElementById('btnArtista').addEventListener('click', () => {
@@ -132,10 +137,21 @@ function criarBotoesArtistas() {
 }
 
 function aplicarFiltros() {
+  const termoNormalizado = termoBusca.trim().toLowerCase();
+  const temFiltro = generoSelecionado || artistaSelecionado || termoNormalizado;
+  if (!temFiltro) {
+    playlistFiltrada = [];
+    document.getElementById("artistaSelecionado").textContent = "Todos os artistas";
+    mostrarLista();
+    return;
+  }
   playlistFiltrada = playlist.filter(musica => {
     const matchGenero = !generoSelecionado || musica.genero === generoSelecionado;
     const matchArtista = !artistaSelecionado || musica.artista === artistaSelecionado;
-    return matchGenero && matchArtista;
+    const matchBusca = !termoNormalizado
+      || musica.nome.toLowerCase().includes(termoNormalizado)
+      || musica.artista.toLowerCase().includes(termoNormalizado);
+    return matchGenero && matchArtista && matchBusca;
   });
   document.getElementById("artistaSelecionado").textContent = artistaSelecionado ? artistaSelecionado : "Todos os artistas";
   mostrarLista();
@@ -167,6 +183,8 @@ function fecharSidebar() {
   playlistFiltrada = [];
   artistaSelecionado = null;
   generoSelecionado = null;
+  termoBusca = '';
+  document.getElementById('buscaMusicaArtista').value = '';
 
   // Opcional: esconder visuais dos filtros se quiser resetar totalmente a interface
   document.getElementById('filtroGenero').style.display = 'none';
