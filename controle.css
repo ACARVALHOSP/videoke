@@ -1,24 +1,48 @@
 body {
   margin: 0;
-  padding: 0;
-  background: #121212;
+  padding: 24px 12px 40px;
+  background: radial-gradient(circle at top, #232a45 0%, #121212 50%);
   color: white;
   font-family: 'Roboto', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   min-height: 100vh;
 }
-h1 {
-  margin-top: 30px;
-  font-size: 28px;
-  text-align: center;
+
+.app-shell {
+  width: min(980px, 100%);
+  margin: 0 auto;
 }
+
+.hero {
+  text-align: center;
+  margin: 8px 0 24px;
+}
+
+.hero-kicker {
+  margin: 0;
+  color: #b0b8d4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+h1 {
+  margin: 10px 0 12px;
+  font-size: 28px;
+}
+
+.hero-subtitle {
+  margin: 0 auto;
+  max-width: 620px;
+  color: #d8dcf0;
+}
+
 .card {
-  background: #1e1e1e;
+  background: rgba(30, 30, 30, 0.9);
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border: 1px solid #2f3552;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,32 +57,61 @@ h1 {
 input, button, select {
   width: 100%;
   margin: 10px 0;
-  padding: 15px;
-  border: 5px;
+  padding: 12px 14px;
+  border: 1px solid #2d334f;
   border-radius: 10px;
-  font-size: 18px;
+  font-size: 16px;
+  box-sizing: border-box;
 }
-.filtros {
-  display: grid;
-  place-items: center; /* Centraliza horizontal e verticalmente */
-  width: 100%;
-  max-width: 90vw;
-  gap:5px;  
+
+input, select {
+  background: #171a2a;
+  color: #fff;
 }
-.filtros button {
-  background: #333;
+
+button {
+  background: linear-gradient(180deg, #29ca68, #1da54f);
   color: white;
   font-weight: bold;
   cursor: pointer;
-  width: 100%;
-  max-width: 90vw;
-  margin:auto;
-  padding:10px;  
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
+
+#areaPedido {
+  margin-top: 18px;
+}
+
+.painel-pedido {
+  background: rgba(23, 25, 38, 0.88);
+  border: 1px solid #2f3552;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.filtros {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 920px;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.acoes-filtro {
+  display: grid;
+  width: 100%;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.filtros button {
+  width: 100%;
+  max-width: 100%;
+  margin: auto;
+  padding: 10px;
+}
+
 #listaMusicas button {
-  background: #1db954;
-  color: white;
-  font-weight: bold;
   margin: 0 auto;   
   margin-bottom: 10px;
   width: 100%;
@@ -73,8 +126,7 @@ input, button, select {
 ul {
   list-style: none;
   padding: 0;
-  width: 90%;
-  max-width: 400px;
+  width: min(100%, 700px);
 }
 li {
   margin: 5px 0;
@@ -88,30 +140,36 @@ li {
 }
 .artistas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Mantém tamanho fixo */
-  gap: 3px;
-  margin: auto;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 10px auto 0;
+  width: 100%;
+}
+
+.artista-btn img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
   }
 .artistas-grid button {
-  display:flex;
+  display: flex;
   flex-direction: column;
   text-align: center;
   text-overflow: ellipsis;
-   background-color:#1db954;  /* Fundo verde */
-  color: white;             /* Texto branco */
-  cursor: pointer;          /* Indica que é clicável */
-  font-size: 14px;          /* Tamanho do texto */
+  font-size: 14px;
   font-weight: bold;       
   border-radius: 10px;
   margin: 0;
-  
+  overflow: hidden;
  }
 .artistas-grid button:hover {
-  background-color: #14833b; /* Cor mais escura ao passar o mouse */
-  transform: scale(1.2);    /* Aumenta ligeiramente o botão */
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }
 #paginacaoArtistas {
-  display: flex; /* Ou grid, se necessário */
+  display: flex;
   justify-content: center;
   gap: 10px;
   padding: 10px;
@@ -121,33 +179,31 @@ li {
   height: 40px;
   font-size: 18px;
   font-weight: bold;
-  background-color: #1db954;
-  color: white;
   border: 2px solid #14833b;
   border-radius: 10px;
   cursor: pointer;
-  display: flex; /* Torna o botão um flex container */
-  align-items: center; /* Centraliza verticalmente */
-  justify-content: center; /* Centraliza horizontalmente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   transition: all 0.3s ease-in-out;
 }
 #btnAnterior:hover, #btnProximo:hover {
-  background-color: #14833b;
-  transform: scale(1.1);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 .genero-container{
 display: grid;
-grid-template-columns: repeat(5,1fr);
+grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
 gap: 10px;
-place-items: center; /* Centraliza horizontal e verticalmente */
-width:700px;
+place-items: center;
+width:100%;
+max-width: 920px;
+margin: 8px auto 0;
 }
 .genero-btn {
-  width: 130px;
+  width: 100%;
   height: 50px;
-  background-color: #1db954; /* Verde vibrante */
-  color: white;
   font-size: 14px;
   font-weight: bold;
   border: none;
@@ -156,8 +212,8 @@ width:700px;
   text-align: center;
 }
 .genero-btn:hover {
-  background-color: #14833b; /* Verde mais escuro */
-  transform: scale(3); /* Aumenta ligeiramente */
+  filter: brightness(1.08);
+  transform: translateY(-1px);
   transition: all 0.3s ease-in-out;
 }
 button:active {
@@ -169,9 +225,9 @@ button:active {
   position: fixed;
   right: 0;
   top: 0;
-  width: 300px;
+  width: min(340px, 88vw);
   height: 100%;
-  background: #1e1e1e;
+  background: #111520;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
   overflow-y: auto;
   padding: 20px;
@@ -189,7 +245,7 @@ button:active {
   padding: 0;
 }
 .sidebar-musicas li {
-  color:red;
+  color: #e8ecff;
 }
 .fechar-btn {
   display: flex;
@@ -207,5 +263,17 @@ button:active {
   border-radius: 50%; /* Botão redondo */
   cursor: pointer;
 }
-.sidebar-musicas button{
+
+@media (max-width: 720px) {
+  body {
+    padding-top: 16px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .card {
+    padding: 20px;
+  }
 }
