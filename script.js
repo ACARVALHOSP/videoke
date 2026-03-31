@@ -2,10 +2,25 @@
 document.addEventListener('DOMContentLoaded', () => {
   const player = document.getElementById('player');
   const iniciarBtn = document.getElementById('iniciarKaraoke');
-  const db = firebase.database();
+  const musicaAtualElement = document.getElementById('musicaAtual');
+  const filaElement = document.getElementById('fila');
+  const timerDiv = document.getElementById('timerProxima');
+  const contadorSpan = document.getElementById('contador');
+  const qrCenter = document.getElementById('qr-center');
+  const qrFixed = document.getElementById('qr-fixed');
+  const notifDiv = document.getElementById('notificacao');
+  const notifTexto = document.getElementById('notificacaoTexto');
+
+  // Evita quebra em runtime caso o Firebase não esteja inicializado.
+  const db = typeof firebase !== 'undefined' ? firebase.database() : null;
 
   if (!player) {
     console.error('Elemento de player não encontrado.');
+    return;
+  }
+
+  if (!db) {
+    console.error('Firebase não foi inicializado corretamente.');
     return;
   }
 
@@ -24,27 +39,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let fila = [];
   let currentSong = null;
+  let countdownInterval = null;
+  let countdownForKey = null;
+
+  function limparContagemRegressiva() {
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+  }
 
   function iniciarKaraoke() {
-    db.ref('fila').on('value', snapshot => {
-      fila = snapshot.val()
-        ? Object.entries(snapshot.val()).map(([key, value]) => ({
-            arquivo: value.arquivo,
-            nome: value.nome,
-            cantor: value.cantor,
-            key
-          }))
-        : [];
+    db.ref('fila').on(
+      'value',
+      snapshot => {
+        // Ignora itens incompletos para evitar falhas ao tocar vídeo.
+        fila = snapshot.val()
+          ? Object.entries(snapshot.val())
+              .map(([key, value]) => ({
+                arquivo: value?.arquivo,
+                nome: value?.nome || 'Sem título',
+                cantor: value?.cantor || 'Cantor desconhecido',
+                key
+              }))
+              .filter(musica => Boolean(musica.arquivo))
+          : [];
 
-      atualizarFilaUI();
-      if (!currentSong && fila.length > 0) {
-        tocarProxima();
+        atualizarFilaUI();
+        if (!currentSong) {
+          tocarProxima();
+        }
+      },
+      error => {
+        console.error('Erro ao observar fila no Firebase:', error);
       }
-    });
+    );
   }
 
   function atualizarFilaUI() {
-    const filaElement = document.getElementById('fila');
     if (!filaElement) return;
 
     filaElement.innerHTML = '';
@@ -56,45 +88,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function tocarProxima() {
+    limparContagemRegressiva();
+
     if (fila.length === 0) {
       currentSong = null;
-      document.getElementById('musicaAtual').innerText = 'Nenhuma música ainda';
+      countdownForKey = null;
+      if (timerDiv) timerDiv.style.display = 'none';
+      if (musicaAtualElement) musicaAtualElement.innerText = 'Nenhuma música ainda';
       player.src = '';
 
-      const qrCenter = document.getElementById('qr-center');
-      const qrFixed = document.getElementById('qr-fixed');
       if (qrCenter) qrCenter.style.display = 'flex';
       if (qrFixed) qrFixed.style.display = 'none';
       return;
     }
 
     const proxima = fila[0];
-    let segundos = 15;
+    // Evita reiniciar a mesma contagem quando o evento de fila chega repetidamente.
+    if (countdownForKey === proxima.key) return;
 
-    const timerDiv = document.getElementById('timerProxima');
-    const contadorSpan = document.getElementById('contador');
+    let segundos = 15;
+    countdownForKey = proxima.key;
+
     if (timerDiv && contadorSpan) {
+      timerDiv.style.display = 'block';
       timerDiv.classList.add('mostrar');
       contadorSpan.innerText = segundos;
     }
 
-    const intervalo = setInterval(() => {
+    countdownInterval = setInterval(() => {
       segundos -= 1;
       if (contadorSpan) contadorSpan.innerText = segundos;
       if (segundos > 0) return;
 
-      clearInterval(intervalo);
+      limparContagemRegressiva();
       if (timerDiv) timerDiv.style.display = 'none';
 
       currentSong = proxima;
-      document.getElementById('musicaAtual').innerText = `${currentSong.cantor} - ${currentSong.nome}`;
+      countdownForKey = null;
+      if (musicaAtualElement) musicaAtualElement.innerText = `${currentSong.cantor} - ${currentSong.nome}`;
       player.src = `videos/${currentSong.arquivo}`;
-      player.play().catch(() => {
-        if (iniciarBtn) iniciarBtn.style.display = 'block';
+      player.play().catch(error => {
+        console.error('Falha ao iniciar reprodução:', error);
+        if (iniciarBtn) {
+          iniciarBtn.style.display = 'block';
+        }
       });
 
-      const notifDiv = document.getElementById('notificacao');
-      const notifTexto = document.getElementById('notificacaoTexto');
       if (notifDiv && notifTexto) {
         notifTexto.innerText = `${currentSong.cantor} - ${currentSong.nome}`;
         notifDiv.style.display = 'block';
@@ -103,8 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
       }
 
-      const qrCenter = document.getElementById('qr-center');
-      const qrFixed = document.getElementById('qr-fixed');
       if (qrCenter) qrCenter.style.display = 'none';
       if (qrFixed) qrFixed.style.display = 'block';
     }, 1000);
@@ -121,6 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     db.ref(`fila/${musicaFinalizada}`)
       .remove()
+      .catch(error => {
+        console.error('Erro ao remover música finalizada da fila:', error);
+      })
       .finally(() => tocarProxima());
   });
 
