@@ -57,7 +57,7 @@
   <input type="text" id="campoMusica" placeholder="Nome da música">
   <input type="text" id="campoCantor" placeholder="Nome do cantor">
   <input type="text" id="campoArquivo" placeholder="Nome do arquivo (ex: musica1.mp4)">
-  <button onclick="adicionarManual()">➕ Adicionar à Fila</button>
+  <button id="btnAdicionarManual">➕ Adicionar à Fila</button>
 </div>
 <hr style="margin: 20px 0;">
 
@@ -97,12 +97,28 @@
 
     filtradas.forEach(musica => {
       const li = document.createElement('li');
-      li.innerHTML = `
-        <strong>${musica.cantor} - ${musica.nome}</strong><br>
-        <span class="arquivo">Arquivo: ${musica.arquivo}</span><br>
-        <button onclick="tocarMusica('${musica.arquivo}')">▶️ Tocar</button>
-        <button onclick="removerMusica('${musica.key}')">Remover</button>
-      `;
+
+      const info = document.createElement('strong');
+      info.textContent = `${musica.cantor} - ${musica.nome}`;
+      li.appendChild(info);
+      li.appendChild(document.createElement('br'));
+
+      const arquivoSpan = document.createElement('span');
+      arquivoSpan.className = 'arquivo';
+      arquivoSpan.textContent = `Arquivo: ${musica.arquivo}`;
+      li.appendChild(arquivoSpan);
+      li.appendChild(document.createElement('br'));
+
+      const btnTocar = document.createElement('button');
+      btnTocar.textContent = '▶️ Tocar';
+      btnTocar.addEventListener('click', () => tocarMusica(musica.arquivo));
+      li.appendChild(btnTocar);
+
+      const btnRemover = document.createElement('button');
+      btnRemover.textContent = 'Remover';
+      btnRemover.addEventListener('click', () => removerMusica(musica.key));
+      li.appendChild(btnRemover);
+
       listaFila.appendChild(li);
     });
   }
@@ -147,6 +163,7 @@ function adicionarManual() {
   // Evento para busca
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('buscaMusica').addEventListener('input', aplicarFiltro);
+    document.getElementById('btnAdicionarManual').addEventListener('click', adicionarManual);
     carregarFila();
   });
 </script>

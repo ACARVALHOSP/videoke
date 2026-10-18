@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     criarBotoesArtistas();
   });
   document.getElementById('validarNomeBtn').addEventListener('click', validarNome);
+  document.getElementById('btnFecharSidebar').addEventListener('click', fecharSidebar);
   document.getElementById('buscaMusicaArtista').addEventListener('input', (event) => {
     termoBusca = event.target.value;
     aplicarFiltros();
@@ -104,10 +105,10 @@ function criarBotoesGenero() {
     const btn = document.createElement('button');
     btn.innerText = genero;
     btn.className = 'genero-btn';
-    btn.onclick = () => {
+    btn.addEventListener('click', () => {
       generoSelecionado = genero;
       aplicarFiltros();
-    };
+    });
     container.appendChild(btn);
   });
 }
@@ -125,10 +126,10 @@ function criarBotoesArtistas() {
     const btn = document.createElement('button');
     btn.className = 'artista-btn';
     btn.innerHTML = `<img src="${imagem}" alt="${nome}"><br>${nome}`;
-    btn.onclick = () => {
+    btn.addEventListener('click', () => {
       artistaSelecionado = nome;
       aplicarFiltros();
-    };
+    });
     container.appendChild(btn);
   });
 
@@ -170,7 +171,10 @@ if (playlistFiltrada.length === 0) {
 
 playlistFiltrada.forEach((musica, index) => {
   const li = document.createElement('li');
-  li.innerHTML = `<button onclick="adicionarFila(${index})">${musica.nome}</button>`;
+  const btn = document.createElement('button');
+  btn.textContent = musica.nome;
+  btn.addEventListener('click', () => adicionarFila(index));
+  li.appendChild(btn);
   lista.appendChild(li);
 });
 
