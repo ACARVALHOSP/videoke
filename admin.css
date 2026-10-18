@@ -1,0 +1,240 @@
+body {
+  margin: 0;
+  padding: 24px 12px 60px;
+  background: radial-gradient(circle at top, #232a45 0%, #121212 50%);
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+}
+
+.app-shell {
+  width: min(820px, 100%);
+  margin: 0 auto;
+}
+
+.hero {
+  text-align: center;
+  margin: 8px 0 24px;
+}
+
+.hero-kicker {
+  margin: 0;
+  color: #b0b8d4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+h1 {
+  margin: 10px 0 12px;
+  font-size: 26px;
+}
+
+.card {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid #2f3552;
+  border-radius: 12px;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.field label {
+  font-size: 13px;
+  color: #b0b8d4;
+  font-weight: 600;
+}
+
+input, button, select {
+  padding: 12px 14px;
+  border: 1px solid #2d334f;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+input, select {
+  background: #171a2a;
+  color: #fff;
+  width: 100%;
+}
+
+button {
+  background: linear-gradient(180deg, #29ca68, #1da54f);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button.secondary {
+  background: #1e2238;
+  border: 1px solid #2f3552;
+}
+
+button.danger {
+  background: linear-gradient(180deg, #ff6b6b, #e14b4b);
+}
+
+.cadastro-form {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 2fr 1fr auto;
+  align-items: end;
+}
+
+@media (max-width: 640px) {
+  .cadastro-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.status-msg {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  display: none;
+}
+
+.status-msg.show {
+  display: block;
+}
+
+.status-msg.success {
+  background: rgba(29, 185, 84, 0.15);
+  color: #4de28a;
+  border: 1px solid rgba(29, 185, 84, 0.4);
+}
+
+.status-msg.error {
+  background: rgba(255, 85, 85, 0.15);
+  color: #ff8a8a;
+  border: 1px solid rgba(255, 85, 85, 0.4);
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.card-header-row h2 {
+  margin: 0;
+}
+
+.usuarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.usuario {
+  background: #171a2a;
+  border: 1px solid #2f3552;
+  border-left: 4px solid #1db954;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.usuario-info {
+  flex-grow: 1;
+  min-width: 180px;
+}
+
+.usuario-info strong {
+  font-size: 16px;
+}
+
+.usuario-info .usuario-meta {
+  color: #b0b8d4;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.usuario-acoes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.usuario-acoes button {
+  width: auto;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.credito-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #2f3552;
+}
+
+.credito-form input {
+  width: auto;
+  flex: 1;
+}
+
+.credito-form button {
+  width: auto;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.vazio {
+  color: #b0b8d4;
+  text-align: center;
+  padding: 12px;
+  font-style: italic;
+}
+
+.hidden {
+  display: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

@@ -2,115 +2,52 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Administração - Karaokê 🎤</title>
+  <link rel="stylesheet" href="admin.css">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="firebase-config.js"></script>
-  <style>
-    body { background: #121212; color: white; font-family: Arial, sans-serif; padding: 20px; }
-    h1, h2 { text-align: center; }
-    input, button { margin: 10px; padding: 10px; font-size: 16px; border-radius: 5px; border: none; }
-    #usuarios { margin-top: 20px; }
-    .usuario { background: #1db954; padding: 10px; margin: 10px 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-    .usuario-info { flex-grow: 1; }
-    .usuario button { margin-left: 5px; background: #ff5555; color: white; cursor: pointer; }
-    .usuario button:first-child { background: #1e90ff; }
-    #valorPago { width: 150px; }
-  </style>
 </head>
 <body>
-  <h1>Administração - Karaokê 🎤</h1>
-  <h2>Cadastrar Novo Usuário</h2>
-  <input type="text" id="nome" placeholder="Nome do usuário">
-  <input type="number" id="valorPago" placeholder="Valor pago (R$)" min="0" step="0.01">
-  <button onclick="cadastrarUsuario()">Cadastrar</button>
-  <h2>Controle de Usuários</h2>
-  <button onclick="resetarContagem()">🔄 Resetar Contagem de Músicas</button>
-  <div id="usuarios"></div>
-  <h2>Playlist</h2>
-  <button onclick="limparFila()">🗑️ Limpar Playlist</button>
-  <script>
-    const db = firebase.database();
-    const PRECO_POR_CREDITO = 2.00;
+  <main class="app-shell">
+    <header class="hero">
+      <p class="hero-kicker">Videokê</p>
+      <h1>Administração 🎚️</h1>
+    </header>
 
-    function cadastrarUsuario() {
-      const nome = document.getElementById('nome').value.trim().toLowerCase();
-      const valorPago = parseFloat(document.getElementById('valorPago').value);
-      if (!nome || isNaN(valorPago) || valorPago <= 0) { alert('Preencha todos os campos corretamente.'); return; }
-      const maxMusicas = Math.floor(valorPago / PRECO_POR_CREDITO);
-      if (maxMusicas <= 0) { alert('Valor insuficiente para gerar créditos.'); return; }
-      db.ref('usuarios/' + nome).set({ nome: nome, maxMusicas: maxMusicas, musicasPedidas: 0 });
-      document.getElementById('nome').value = '';
-      document.getElementById('valorPago').value = '';
-      alert(`Usuário cadastrado com ${maxMusicas} músicas!`);
-    }
+    <section class="card">
+      <h2>Cadastrar Novo Usuário</h2>
+      <form id="cadastroForm" class="cadastro-form">
+        <div class="field">
+          <label for="nome">Nome do usuário</label>
+          <input type="text" id="nome" placeholder="Nome do usuário" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="valorPago">Valor pago (R$)</label>
+          <input type="number" id="valorPago" placeholder="0,00" min="0" step="0.01">
+        </div>
+        <button type="submit">Cadastrar</button>
+      </form>
+      <div id="cadastroStatus" class="status-msg"></div>
+    </section>
 
-    function carregarUsuarios() {
-      const usuariosDiv = document.getElementById('usuarios');
-      usuariosDiv.innerHTML = '';
-      db.ref('usuarios').on('value', snapshot => {
-        usuariosDiv.innerHTML = '';
-        snapshot.forEach(childSnapshot => {
-          const user = childSnapshot.val();
-          const div = document.createElement('div');
-          div.className = 'usuario';
-          div.innerHTML = `
-            <div class="usuario-info">
-              <strong>${user.nome}</strong><br>
-              🎶 ${user.musicasPedidas}/${user.maxMusicas} músicas usadas<br>
-              💰 Total: R$ ${(user.musicasPedidas * PRECO_POR_CREDITO).toFixed(2)}
-            </div>
-            <div>
-              <button onclick="adicionarCreditos('${user.nome}')">Adicionar Créditos</button>
-              <button onclick="removerUsuario('${user.nome}')">Remover</button>
-            </div>
-          `;
-          usuariosDiv.appendChild(div);
-        });
-      });
-    }
+    <section class="card">
+      <div class="card-header-row">
+        <h2>Controle de Usuários</h2>
+        <button type="button" id="btnResetarContagem" class="secondary">🔄 Resetar Contagem de Músicas</button>
+      </div>
+      <div id="usuarios" class="usuarios-lista"></div>
+    </section>
 
-    function adicionarCreditos(nome) {
-      const valor = parseFloat(prompt('Digite o valor pago (R$):'));
-      if (isNaN(valor) || valor <= 0) { alert('Valor inválido.'); return; }
-      const novosCreditos = Math.floor(valor / PRECO_POR_CREDITO);
-      if (novosCreditos <= 0) { alert('Valor insuficiente para adicionar créditos.'); return; }
-      db.ref('usuarios/' + nome.toLowerCase()).once('value').then(snapshot => {
-        if (snapshot.exists()) {
-          const user = snapshot.val();
-          const novoMax = (user.maxMusicas || 0) + novosCreditos;
-          db.ref('usuarios/' + nome.toLowerCase()).update({ maxMusicas: novoMax });
-          alert(`Adicionado ${novosCreditos} músicas para ${nome}!`);
-        }
-      });
-    }
+    <section class="card">
+      <div class="card-header-row">
+        <h2>Playlist</h2>
+        <button type="button" id="btnLimparFila" class="danger">🗑️ Limpar Playlist</button>
+      </div>
+    </section>
+  </main>
 
-    function removerUsuario(nome) {
-      if (confirm('Tem certeza que deseja remover este usuário?')) {
-        db.ref('usuarios/' + nome.toLowerCase()).remove();
-      }
-    }
-
-    function resetarContagem() {
-      if (confirm('Tem certeza que deseja resetar a contagem de músicas de todos?')) {
-        db.ref('usuarios').once('value', snapshot => {
-          snapshot.forEach(childSnapshot => {
-            const nome = childSnapshot.key;
-            db.ref('usuarios/' + nome).update({ musicasPedidas: 0 });
-          });
-          alert('Contagem de músicas resetada!');
-        });
-      }
-    }
-
-    function limparFila() {
-      if (confirm('Tem certeza que deseja limpar toda a playlist?')) {
-        db.ref('fila').remove();
-        alert('Playlist limpa!');
-      }
-    }
-
-    carregarUsuarios();
-  </script>
+  <script src="admin.js"></script>
 </body>
 </html>
